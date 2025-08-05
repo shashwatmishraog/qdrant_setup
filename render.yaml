@@ -2,27 +2,37 @@ services:
   - type: web
     name: qdrant-vector-db
     runtime: docker
-    repo: https://github.com/YOUR_USERNAME/YOUR_REPO
-    region: oregon
-    plan: free  # ← CHANGED TO FREE
+    # No repo line - Render will auto-detect when you connect
+    region: oregon  # Options: oregon, ohio, frankfurt, singapore
+    plan: free  # Free tier - no payment required
     
+    # Health check endpoint
     healthCheckPath: /
     
+    # Environment variables for Qdrant configuration
     envVars:
       - key: QDRANT__SERVICE__HTTP_PORT
         value: 6333
       - key: QDRANT__SERVICE__GRPC_PORT
         value: 6334
-      - key: QDRANT__LOG_LEVEL
-        value: INFO
       - key: QDRANT__SERVICE__HOST
         value: 0.0.0.0
-      # Storage will be in-memory for free tier
+      - key: QDRANT__LOG_LEVEL
+        value: INFO
+      - key: QDRANT__STORAGE__STORAGE_PATH
+        value: /qdrant/storage
       - key: QDRANT__SERVICE__API_KEY
-        generateValue: true
+        generateValue: true  # Generates secure random API key
+      - key: QDRANT__SERVICE__READ_ONLY_API_KEY
+        generateValue: true  # Optional: for read-only access
+      - key: QDRANT__TELEMETRY_DISABLED
+        value: true  # Disable telemetry
+      - key: QDRANT__SERVICE__ENABLE_TLS
+        value: false  # TLS handled by Render
     
-    # REMOVED disk section - not available on free tier
-    
+    # Auto-deploy when you push to GitHub
     autoDeploy: true
+    
+    # Docker configuration
     dockerfilePath: ./Dockerfile
     dockerContext: .
