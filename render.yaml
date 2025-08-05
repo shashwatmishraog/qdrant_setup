@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: qdrant-vector-db
+    runtime: docker
+    repo: https://github.com/YOUR_USERNAME/YOUR_REPO # Replace with your repo
+    region: oregon # Choose your preferred region
+    plan: standard # Use 'free' for testing, 'standard' for production
+    
+    # Health check configuration
+    healthCheckPath: /
+    
+    # Environment variables
+    envVars:
+      - key: QDRANT__SERVICE__HTTP_PORT
+        value: 6333
+      - key: QDRANT__SERVICE__GRPC_PORT
+        value: 6334
+      - key: QDRANT__LOG_LEVEL
+        value: INFO
+      - key: QDRANT__SERVICE__HOST
+        value: 0.0.0.0
+      - key: QDRANT__STORAGE__STORAGE_PATH
+        value: /qdrant/storage
+      - key: QDRANT__SERVICE__API_KEY
+        generateValue: true # Generates secure random API key
+      - key: QDRANT__SERVICE__READ_ONLY_API_KEY
+        generateValue: true # Optional: for read-only access
+      - key: QDRANT__TELEMETRY_DISABLED
+        value: true # Disable telemetry if desired
+    
+    # Persistent disk for vector storage
+    disk:
+      name: qdrant-storage
+      mountPath: /qdrant/storage
+      sizeGB: 10 # Adjust based on your needs
+
+    # Auto-deploy configuration
+    autoDeploy: true # Auto-deploy on git push
+    
+    # Build configuration
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
